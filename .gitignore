@@ -11,6 +11,10 @@ endpoints/*.py
 endpoints/*_config.json
 !endpoints/.gitkeep
 
+# OS
+.DS_Store
+CLAUDE.md
+
 # IDE
 .idea/
 .vscode/
