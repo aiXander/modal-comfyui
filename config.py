@@ -1,12 +1,16 @@
 """Central configuration for Modal ComfyUI deployment."""
 
 import os
+from pathlib import Path
+
+# Custom nodes manifest (baked into image at build time)
+CUSTOM_NODES_FILE = Path(__file__).parent / "custom_nodes.txt"
 
 # Modal volume names
 MODELS_VOLUME_NAME = os.environ.get("COMFY_MODELS_VOLUME", "comfy-models-cache")
 
 # GPU defaults
-DEFAULT_GPU = os.environ.get("COMFY_DEFAULT_GPU", "L40S")
+DEFAULT_GPU = os.environ.get("COMFY_DEFAULT_GPU", "T4")
 DEFAULT_GPU_COUNT = int(os.environ.get("COMFY_GPU_COUNT", "1"))
 
 # Paths inside the container
@@ -16,7 +20,7 @@ CACHE_DIR = "/cache"
 
 # Scaledown windows (seconds)
 INTERACTIVE_SCALEDOWN = 300  # 5 min for interactive work
-API_SCALEDOWN = 300  # 5 min for API endpoints
+API_SCALEDOWN = 60  # 60s for API endpoints
 
 # ComfyUI server port
 COMFY_PORT = 8000
@@ -66,4 +70,4 @@ INPUT_NODE_TYPES = {
 }
 
 # Output node types (to find generated files)
-OUTPUT_NODE_TYPES = ["SaveImage", "SaveAnimatedWEBP", "SaveVideo", "VHS_VideoCombine"]
+OUTPUT_NODE_TYPES = ["SaveImage", "VHS_VideoCombine"]

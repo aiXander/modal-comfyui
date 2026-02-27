@@ -1,5 +1,10 @@
 # Modal ComfyUI — Automated Workflow Deployment
 
+# TODO:
+- create proper textureflow_models.json file and use good urls for all models
+- 
+
+
 Deploy ComfyUI workflows as fast-booting Modal API endpoints with automatic dependency detection, GPU snapshots, and model caching.
 
 ## Architecture
@@ -18,6 +23,7 @@ modal-comfyui/
 ├── models.py              # Model download utilities (HF Hub + aria2c)
 ├── interactive.py         # Interactive ComfyUI UI server
 ├── deploy_workflow.py     # CLI: analyze workflow → generate endpoint
+├── custom_nodes.txt       # Custom node IDs to bake into the image
 ├── workflows/             # Drop your workflow_api.json files here
 │   ├── flux_schnell_api.json      # Sample Flux Schnell txt2img workflow
 │   └── flux_schnell_models.json   # Model download config for Flux Schnell
@@ -42,8 +48,9 @@ Launch the full ComfyUI web UI on a temporary URL:
 modal serve interactive.py
 ```
 
-- Design your workflow visually, install custom nodes, download models
-- Models and custom nodes persist to Modal volumes across container restarts
+- Design your workflow visually, test custom nodes, download models
+- Models persist to Modal volumes across container restarts
+- Custom nodes tested here should be added to `custom_nodes.txt` for permanent inclusion (see below)
 - When done, click the gear icon → **Save (API Format)** → save to `workflows/`
 
 ### 2. Generate an endpoint
@@ -119,6 +126,26 @@ curl -X POST <endpoint_url> \
   --output test.png
 ```
 
+## Custom Nodes
+
+Custom nodes are **baked into the Docker image** at build time, not persisted to volumes. This is necessary because custom nodes install Python packages into `site-packages/` — a volume only persists the mount point, so imports break on restart.
+
+Add node registry IDs to `custom_nodes.txt` (one per line):
+
+```txt
+# custom_nodes.txt
+comfyui-impact-pack
+comfyui-essentials
+```
+
+Find node IDs at the [ComfyUI Registry](https://registry.comfy.org/). The workflow:
+
+1. Test the node in interactive mode (`modal serve interactive.py`)
+2. Add its registry ID to `custom_nodes.txt`
+3. Rebuild — both interactive mode and generated endpoints will include it
+
+Models stay on a Volume (they're large, have no Python deps, and symlink cleanly).
+
 ## Model Configuration
 
 Create a JSON file listing models to download during image build:
@@ -163,6 +190,7 @@ The deploy tool recognizes these ComfyUI node types as configurable API inputs:
 | Fast model downloads | `HF_XET_HIGH_PERFORMANCE=1` | Maximizes HF Hub bandwidth |
 | Volume-based model caching | Download once to Modal Volume, symlink on boot | Zero re-download across containers |
 | Snapshot stability | `TORCHINDUCTOR_COMPILE_THREADS=1` | Prevents async compilation breaking CUDA checkpoint |
+| Image-baked custom nodes | `custom_nodes.txt` installed at build time | Deterministic, zero boot overhead, GPU-snapshot-compatible |
 | Headless execution | `comfy launch --background` + `comfy run` | Proven subprocess pattern from Modal's official examples |
 
 ## CLI Reference

@@ -4,8 +4,8 @@ Usage:
     modal serve interactive.py      # Dev mode — temporary URL
     modal deploy interactive.py     # Persistent URL
 
-Opens the full ComfyUI web interface. Models and custom nodes
-are persisted to volumes, so they survive container restarts.
+Opens the full ComfyUI web interface. Models persist to volumes.
+Custom nodes are baked into the image via custom_nodes.txt.
 
 After authoring a workflow:
 1. Click the gear icon in ComfyUI
@@ -27,7 +27,7 @@ from config import (
     INTERACTIVE_SCALEDOWN,
     MODELS_VOLUME_NAME,
 )
-from image import build_base_image
+from image import build_base_image, hf_secret
 
 base_image = build_base_image()
 
@@ -42,6 +42,7 @@ app = modal.App(name="comfyui-interactive", image=base_image)
     volumes={
         CACHE_DIR: models_vol,
     },
+    secrets=[hf_secret],
     scaledown_window=INTERACTIVE_SCALEDOWN,
     enable_memory_snapshot=True,
     experimental_options={"enable_gpu_snapshot": True},
