@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+build/
+dist/
+*.egg-info/
+
+# Generated endpoints (review before committing)
+endpoints/*.py
+endpoints/*_config.json
+!endpoints/.gitkeep
+
+# IDE
+.idea/
+.vscode/

@@ -1,0 +1,22 @@
+[
+  {
+    "repo_id": "Comfy-Org/flux1-schnell",
+    "filename": "flux1-schnell-fp8.safetensors",
+    "model_dir": "/root/comfy/ComfyUI/models/diffusion_models"
+  },
+  {
+    "repo_id": "comfyanonymous/flux_text_encoders",
+    "filename": "t5xxl_fp8_e4m3fn.safetensors",
+    "model_dir": "/root/comfy/ComfyUI/models/clip"
+  },
+  {
+    "repo_id": "comfyanonymous/flux_text_encoders",
+    "filename": "clip_l.safetensors",
+    "model_dir": "/root/comfy/ComfyUI/models/clip"
+  },
+  {
+    "repo_id": "black-forest-labs/FLUX.1-schnell",
+    "filename": "ae.safetensors",
+    "model_dir": "/root/comfy/ComfyUI/models/vae"
+  }
+]
